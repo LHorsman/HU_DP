@@ -98,7 +98,19 @@ public class ReizigerOracleDaolmpl extends OracleBaseDao implements ReizigerDao 
 
     @Override
     public Reiziger delete(Reiziger reiziger) {
-        return null;
+
+        try {
+            PreparedStatement prepStatement = this.getConnection().prepareStatement("DELETE FROM REIZIGER WHERE REIZIGERID = ?");
+            prepStatement.setInt(1, reiziger.getReizigerNummer());
+
+            ResultSet result = prepStatement.executeQuery();
+
+
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return reiziger;
     }
 
     @Override
