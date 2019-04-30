@@ -1,4 +1,4 @@
-package P1;
+package P2;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -6,16 +6,22 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class ReizigerOracleDaolmpl extends OracleBaseDao implements ReizigerDao {
+    private OVChipkaartOracleDaoImpl ovChip;
+
+    public ReizigerOracleDaolmpl() {
+        this.ovChip = new OVChipkaartOracleDaoImpl();
+    }
 
     @Override
     public ArrayList<Reiziger> findAll() {
         ArrayList<Reiziger> reizigers = new ArrayList<Reiziger>();
 
         try {
-            ResultSet result = this.getConnection().createStatement().executeQuery("SELECT * FROM REIZIGER");
+            ResultSet result = this.getConnection().createStatement().executeQuery("SELECT * FROM REIZIGER ");
 
             while(result.next()) {
-                Reiziger reiziger = new Reiziger(result.getString("voornaam"), result.getString("tussenvoegsel"), result.getString("achternaam"), result.getInt("reizigerID"), result.getDate("geboortedatum"));
+                Reiziger reiziger = new Reiziger(result.getString("voorletters"), result.getString("tussenvoegsel"), result.getString("achternaam"), result.getInt("reizigerID"), result.getDate("gebortedatum"));
+                reiziger.setKaarten(this.ovChip.findByReizigerid(reiziger.getReizigerNummer()));
                 reizigers.add(reiziger);
             }
 
@@ -32,14 +38,15 @@ public class ReizigerOracleDaolmpl extends OracleBaseDao implements ReizigerDao 
         ArrayList<Reiziger> reizigers = new ArrayList<Reiziger>();
 
         try {
-            PreparedStatement prepStatement = this.getConnection().prepareStatement("SELECT * FROM REIZIGER WHERE GEBOORTEDATUM = TO_DATE(?,'YYYY-MM-DD HH24:MI:SS')");
+            PreparedStatement prepStatement = this.getConnection().prepareStatement(" SELECT * FROM REIZIGER WHERE GEBORTEDATUM = TO_DATE(?,'YYYY-MM-DD HH24:MI:SS')");
 
             prepStatement.setString(1, GBdatum);
 
             ResultSet result = prepStatement.executeQuery();
 
             while(result.next()) {
-                Reiziger reiziger = new Reiziger(result.getString("voornaam"), result.getString("tussenvoegsel"), result.getString("achternaam"), result.getInt("reizigerID"), result.getDate("geboortedatum"));
+                Reiziger reiziger = new Reiziger(result.getString("voorletters"), result.getString("tussenvoegsel"), result.getString("achternaam"), result.getInt("reizigerID"), result.getDate("gebortedatum"));
+                reiziger.setKaarten(this.ovChip.findByReizigerid(reiziger.getReizigerNummer()));
                 reizigers.add(reiziger);
             }
 
@@ -55,7 +62,7 @@ public class ReizigerOracleDaolmpl extends OracleBaseDao implements ReizigerDao 
         Reiziger nieuwereiziger = null;
 
         try {
-            PreparedStatement prepStatement = this.getConnection().prepareStatement("INSERT INTO REIZIGER (VOORNAAM, TUSSENVOEGSEL, ACHTERNAAM, GEBOORTEDATUM) VALUES (?, ?, ?, ?)");
+            PreparedStatement prepStatement = this.getConnection().prepareStatement("INSERT INTO REIZIGER (VOORLETTERS, TUSSENVOEGSEL, ACHTERNAAM, GEBORTEDATUM) VALUES (?, ?, ?, ?) ");
             prepStatement.setString(1, reiziger.getVoornaam());
             prepStatement.setString(2, reiziger.getTussenvoegsel());
             prepStatement.setString(3, reiziger.getAchternaam());
@@ -73,11 +80,12 @@ public class ReizigerOracleDaolmpl extends OracleBaseDao implements ReizigerDao 
         return nieuwereiziger;
     }
 
+
     @Override
     public Reiziger update(Reiziger reiziger) {
 
         try {
-            PreparedStatement prepStatement = this.getConnection().prepareStatement("UPDATE REIZIGER SET VOORNAAM = ?, TUSSENVOEGSEL = ?, ACHTERNAAM = ?, GEBOORTEDATUM = ? WHERE REIZIGERID = ?");
+            PreparedStatement prepStatement = this.getConnection().prepareStatement("UPDATE REIZIGER SET VOORLETTERS = ?, TUSSENVOEGSEL = ?, ACHTERNAAM = ?, GEBORTEDATUM = ? WHERE REIZIGERID = ?");
             prepStatement.setString(1, reiziger.getVoornaam());
             prepStatement.setString(2, reiziger.getTussenvoegsel());
             prepStatement.setString(3, reiziger.getAchternaam());
@@ -93,6 +101,7 @@ public class ReizigerOracleDaolmpl extends OracleBaseDao implements ReizigerDao 
 
         return reiziger;
     }
+
 
     @Override
     public Reiziger delete(Reiziger reiziger) {
