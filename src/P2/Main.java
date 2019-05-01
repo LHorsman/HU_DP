@@ -44,7 +44,7 @@ public class Main {
             r.setVoornaam("UPDATED");
 
             r.getKaarten().forEach(k -> {
-                //update de saldo van de kaarten.
+                //update het saldo van de kaarten.
                 k.setSaldo(10.00);
             });
 
