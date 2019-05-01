@@ -1,4 +1,4 @@
-package P2;
+package P3;
 
 import java.sql.Date;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ public class Reiziger {
     private String tussenvoegsel;
     private String achternaam;
     private Date gbdatum;
-    private ArrayList<OVChipkaart> kaarten = new ArrayList<OVChipkaart>();
+    private ArrayList<OVChipkaart> kaarten;
 
     public Reiziger(String voornaam, String tussenvoegsel, String achternaam, int reizigerNummer, Date gbdatum) {
         this.voornaam = voornaam;
@@ -57,11 +57,6 @@ public class Reiziger {
 
     public void setKaarten(ArrayList<OVChipkaart> kaarten) {
         this.kaarten = kaarten;
-    }
-
-    public void addKaart(OVChipkaart kaart) {
-//        if (this.kaarten.contains(kaart)) return;
-        this.kaarten.add(kaart);
     }
 
     public ArrayList<OVChipkaart> getKaarten() {
