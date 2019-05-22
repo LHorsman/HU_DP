@@ -1,18 +1,24 @@
 package P3;
 
+import java.util.ArrayList;
+
 public class Product {
     private int productnummer;
     private String productNaam;
     private String beschrijving;
     private double prijs;
-    private OVChipkaart ov;
+    private ArrayList<Integer> ov;
 
-    public Product(int productnummer, String productNaam, String beschrijving, double prijs, OVChipkaart k) {
+    public Product(int productnummer, String productNaam, String beschrijving, double prijs) {
         this.productnummer = productnummer;
         this.productNaam = productNaam;
         this.beschrijving = beschrijving;
         this.prijs = prijs;
-        this.ov = k;
+        this.ov = new ArrayList<Integer>();
+    }
+
+    public void setOvChipkaartnummers(ArrayList<Integer> list) {
+        this.ov = list;
     }
 
     public int getProductnummer() {
@@ -48,6 +54,6 @@ public class Product {
     }
 
     public String toString() {
-        return this.productnummer + ": " + this.productNaam + ": " + this.beschrijving;
+        return this.productnummer + ": " + this.productNaam + ": " + this.beschrijving + " alle ovchipkaarten verbonden: " + this.ov;
     }
 }

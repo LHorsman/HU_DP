@@ -5,35 +5,42 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class OVChipkaartOracleDaoImpl extends OracleBaseDao implements Dao<OVChipkaart>, OVChipkaartDao {
+public class OVChipkaartOracleDaoImpl extends OracleBaseDao implements OVChipkaartDao {
     private ProductOracleDaoImpl product;
+    private ReizigerOracleDaolmpl reiziger;
 
     public OVChipkaartOracleDaoImpl() {
-        this.product = new ProductOracleDaoImpl();
+
     }
 
     @Override
     public ArrayList<OVChipkaart> findAll() {
-//        ArrayList<OVChipkaart> ovs = new ArrayList<OVChipkaart>();
-//
-//        try {
-//            ResultSet result = this.getConnection().createStatement().executeQuery("SELECT * FROM OV_CHIPKAART");
-//
-//            while(result.next()) {
-//                OVChipkaart ov = new OVChipkaart(result.getInt("kaartnummer"), result.getDate("geldigtot"), result.getInt("klasse"), result.getFloat("saldo"), result.getInt("reizigerid"));
-//                ovs.add(ov);
-//            }
-//
-//        } catch(SQLException e) {
-//            System.out.println(e.getMessage());
-//        }
-//
-//        return null;
-        return null;
+        this.product = new ProductOracleDaoImpl();
+        this.reiziger = new ReizigerOracleDaolmpl();
+        ArrayList<OVChipkaart> ovs = new ArrayList<OVChipkaart>();
+
+        try {
+            PreparedStatement prepStatement = this.getConnection().prepareStatement(" SELECT * FROM OV_CHIPKAART");
+            ResultSet result = prepStatement.executeQuery();
+
+            while(result.next()) {
+                OVChipkaart ov = new OVChipkaart(result.getInt("kaartnummer"), result.getDate("geldigtot"), result.getInt("klasse"), result.getFloat("saldo"));
+                ov.setProducten(product.findByKaart(ov));
+                ov.setReiziger(reiziger.findByReizgerNummer(result.getInt("reizigerid")));
+                ovs.add(ov);
+            }
+
+            return ovs;
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return ovs;
     }
 
     @Override
     public ArrayList<OVChipkaart> findByReiziger(Reiziger r) {
+        this.product = new ProductOracleDaoImpl();
         ArrayList<OVChipkaart> ovs = new ArrayList<OVChipkaart>();
 
         try {
@@ -42,7 +49,8 @@ public class OVChipkaartOracleDaoImpl extends OracleBaseDao implements Dao<OVChi
             ResultSet result = prepStatement.executeQuery();
 
             while(result.next()) {
-                OVChipkaart ov = new OVChipkaart(result.getInt("kaartnummer"), result.getDate("geldigtot"), result.getInt("klasse"), result.getFloat("saldo"), r);
+                OVChipkaart ov = new OVChipkaart(result.getInt("kaartnummer"), result.getDate("geldigtot"), result.getInt("klasse"), result.getFloat("saldo"));
+                ov.setReiziger(r);
                 ov.setProducten(product.findByKaart(ov));
                 ovs.add(ov);
             }
@@ -105,6 +113,26 @@ public class OVChipkaartOracleDaoImpl extends OracleBaseDao implements Dao<OVChi
         }
 
         return ov;
+    }
+
+    public ArrayList<Integer> getKaartnummersByProduct(Product p) {
+        ArrayList<Integer> ovchipnummers = new ArrayList<Integer>();
+
+        try {
+            PreparedStatement prepStatement = this.getConnection().prepareStatement("SELECT OV_CHIPKAART.* FROM OV_CHIPKAART INNER JOIN OV_CHIPKAART_PRODUCT OCP on OV_CHIPKAART.KAARTNUMMER = OCP.KAARTNUMMER WHERE OCP.PRODUCTNUMMER = ?");
+            prepStatement.setInt(1, p.getProductnummer());
+            ResultSet result = prepStatement.executeQuery();
+
+            while(result.next()) {
+                ovchipnummers.add(result.getInt("kaartnummer"));
+            }
+
+            return ovchipnummers;
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return ovchipnummers;
     }
 
     @Override

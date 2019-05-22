@@ -69,10 +69,6 @@ public class ReizigerOracleDaolmpl extends OracleBaseDao implements Dao<Reiziger
 
             ResultSet result = prepStatement.executeQuery();
 
-            //create de kaarten gekoppeld aan de reiziger.
-            reiziger.getKaarten().forEach(k -> this.ovChip.safe(k));
-
-
             return reiziger;
         } catch(SQLException e) {
             System.out.println(e.getMessage());
@@ -93,9 +89,6 @@ public class ReizigerOracleDaolmpl extends OracleBaseDao implements Dao<Reiziger
             prepStatement.setInt(5, reiziger.getReizigerNummer());
 
             ResultSet result = prepStatement.executeQuery();
-
-            reiziger.getKaarten().forEach(k -> this.ovChip.update(k));
-
 
         } catch(SQLException e) {
             System.out.println(e.getMessage());
@@ -123,6 +116,30 @@ public class ReizigerOracleDaolmpl extends OracleBaseDao implements Dao<Reiziger
 
         return reiziger;
     }
+
+    public Reiziger findByReizgerNummer(int nummer) {
+        Reiziger reiziger = null;
+
+        try {
+            PreparedStatement prepStatement = this.getConnection().prepareStatement(" SELECT * FROM REIZIGER WHERE REIZIGERID = ?");
+
+            prepStatement.setInt(1, nummer);
+
+            ResultSet result = prepStatement.executeQuery();
+
+            while(result.next()) {
+                reiziger = new Reiziger(result.getString("voorletters"), result.getString("tussenvoegsel"), result.getString("achternaam"), result.getInt("reizigerID"), result.getDate("gebortedatum"));
+                reiziger.setKaarten(this.ovChip.findByReiziger(reiziger));
+            }
+
+            return reiziger;
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return reiziger;
+    }
+
 
     @Override
     public void closeConnection() {
