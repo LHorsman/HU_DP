@@ -10,47 +10,48 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.List;
 
-public class ReizigerOracleDaoImpl extends OracleBaseDao implements ReizigerDao {
+public class OVChipkaartOracleDaoImpl extends OracleBaseDao implements OVChipkaartDao {
+
     @Override
-    public List<Reiziger> findAll() throws SQLException, ParseException {
+    public List<OVChipkaart> findAll() throws SQLException, ParseException {
         Session s = this.getConnection();
         CriteriaBuilder cb = s.getCriteriaBuilder();
-        CriteriaQuery<Reiziger> q = cb.createQuery(Reiziger.class);
-        Root<Reiziger> c = q.from(Reiziger.class);
+        CriteriaQuery<OVChipkaart> q = cb.createQuery(OVChipkaart.class);
+        Root<OVChipkaart> c = q.from(OVChipkaart.class);
 
         q.select(c);
 
-        TypedQuery<Reiziger> query = s.createQuery(q);
+        TypedQuery<OVChipkaart> query = s.createQuery(q);
 
-        List<Reiziger> results = query.getResultList();
+        List<OVChipkaart> results = query.getResultList();
 
         return results;
     }
 
     @Override
-    public Reiziger save(Reiziger reiziger) throws SQLException, ParseException {
+    public OVChipkaart save(OVChipkaart ovChipkaart) throws SQLException, ParseException {
         Session s = this.getConnection();
         s.beginTransaction();
-        s.save(reiziger);
+        s.save(ovChipkaart);
         s.getTransaction().commit();
-        return reiziger;
+        return ovChipkaart;
     }
 
     @Override
-    public Reiziger update(Reiziger reiziger) throws SQLException, ParseException {
+    public OVChipkaart update(OVChipkaart ovChipkaart) throws SQLException, ParseException {
         Session s = this.getConnection();
         s.beginTransaction();
-        s.update(reiziger);
+        s.update(ovChipkaart);
         s.getTransaction().commit();
-        return reiziger;
+        return ovChipkaart;
     }
 
     @Override
-    public Reiziger delete(Reiziger reiziger) throws SQLException, ParseException  {
+    public OVChipkaart delete(OVChipkaart ovChipkaart) throws SQLException, ParseException {
         Session s = this.getConnection();
         s.beginTransaction();
-        s.delete(reiziger);
+        s.delete(ovChipkaart);
         s.getTransaction().commit();
-        return reiziger;
+        return ovChipkaart;
     }
 }
